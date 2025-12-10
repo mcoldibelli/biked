@@ -25,7 +25,7 @@ public class UserService {
         .orElseThrow(() -> new UserNotFoundException(id));
   }
 
-  @Transactional(readOnly = true)
+  @Transactional
   public UserResponse create(CreateUserRequest request) {
     log.info("Creating user with email: {}", request.email());
 
