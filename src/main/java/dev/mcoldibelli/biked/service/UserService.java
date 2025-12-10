@@ -1,10 +1,12 @@
 package dev.mcoldibelli.biked.service;
 
 import dev.mcoldibelli.biked.dto.request.CreateUserRequest;
+import dev.mcoldibelli.biked.dto.request.UpdateUserRequest;
 import dev.mcoldibelli.biked.dto.response.UserResponse;
 import dev.mcoldibelli.biked.exception.UserNotFoundException;
 import dev.mcoldibelli.biked.model.User;
 import dev.mcoldibelli.biked.repository.UserRepository;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,13 @@ public class UserService {
         .orElseThrow(() -> new UserNotFoundException(id));
   }
 
+  @Transactional(readOnly = true)
+  public List<UserResponse> findAll() {
+    return userRepository.findAll().stream()
+        .map(this::toResponse)
+        .toList();
+  }
+
   @Transactional
   public UserResponse create(CreateUserRequest request) {
     log.info("Creating user with email: {}", request.email());
@@ -39,6 +48,31 @@ public class UserService {
     log.info("User created with id: {}", saved.getId());
 
     return toResponse(saved);
+  }
+
+  @Transactional
+  public UserResponse update(UUID id, UpdateUserRequest request) {
+    var user = userRepository.findById(id)
+        .orElseThrow(() -> new UserNotFoundException(id));
+
+    if (request.name() != null) {
+      user.setName(request.name());
+    }
+
+    var saved = userRepository.save(user);
+    log.info("User updated with id: {}", saved.getId());
+
+    return toResponse(saved);
+  }
+
+  @Transactional
+  public void delete(UUID id) {
+    if (!userRepository.existsById(id)) {
+      throw new UserNotFoundException(id);
+    }
+
+    userRepository.deleteById(id);
+    log.info("User deleted with id: {}", id);
   }
 
   private UserResponse toResponse(User user) {
