@@ -6,9 +6,10 @@ import dev.mcoldibelli.biked.dto.response.UserResponse;
 import dev.mcoldibelli.biked.service.UserService;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,8 +33,8 @@ public class UserController {
   }
 
   @GetMapping
-  public ResponseEntity<List<UserResponse>> getAll() {
-    return ResponseEntity.ok(userService.findAll());
+  public ResponseEntity<Page<UserResponse>> getAll(Pageable pageable) {
+    return ResponseEntity.ok(userService.findAll(pageable));
   }
 
   @PostMapping
