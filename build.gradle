@@ -19,6 +19,10 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    jjwtVersion = "0.12.6"
+}
+
 dependencies {
     // Spring Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -28,6 +32,12 @@ dependencies {
 
     // Validação
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
 
     // PostgreSQL
     runtimeOnly 'org.postgresql:postgresql'
@@ -41,6 +51,7 @@ dependencies {
 
     // Testes
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

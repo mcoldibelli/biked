@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
   private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
 
   @Transactional(readOnly = true)
   public UserResponse findById(UUID id) {
@@ -41,7 +43,7 @@ public class UserService {
     var user = User.builder()
         .email(request.email())
         .name(request.name())
-        .password(request.password())
+        .password(passwordEncoder.encode(request.password()))
         .build();
 
     var saved = userRepository.save(user);

@@ -1,4 +1,4 @@
-package dev.mcoldibelli.biked.service.controller;
+package dev.mcoldibelli.biked.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -15,18 +15,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.mcoldibelli.biked.controller.UserController;
+import dev.mcoldibelli.biked.config.JwtAuthenticationFilter;
 import dev.mcoldibelli.biked.dto.request.CreateUserRequest;
 import dev.mcoldibelli.biked.dto.request.UpdateUserRequest;
 import dev.mcoldibelli.biked.dto.response.UserResponse;
 import dev.mcoldibelli.biked.exception.GlobalExceptionHandler;
 import dev.mcoldibelli.biked.exception.UserNotFoundException;
+import dev.mcoldibelli.biked.service.JwtService;
 import dev.mcoldibelli.biked.service.UserService;
 import java.time.Instant;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -34,6 +36,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(UserController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @Import(GlobalExceptionHandler.class)
 @DisplayName("UserController")
 class UserControllerTest {
@@ -48,6 +51,12 @@ class UserControllerTest {
 
   @MockitoBean
   private UserService userService;
+
+  @MockitoBean
+  private JwtService jwtService;
+
+  @MockitoBean
+  private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Test
   @DisplayName("POST /api/v1/users - should create user and return 201")

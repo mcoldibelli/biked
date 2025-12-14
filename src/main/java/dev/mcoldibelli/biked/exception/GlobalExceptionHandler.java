@@ -30,6 +30,14 @@ public class GlobalExceptionHandler {
         .body(new ErrorResponse("VALIDATION_ERROR", String.join("; ", errors)));
   }
 
+  @ExceptionHandler(InvalidCredentialsException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidCredentials(InvalidCredentialsException ex) {
+    log.warn("Invalid credentials attempt");
+    return ResponseEntity
+        .status(HttpStatus.UNAUTHORIZED)
+        .body(new ErrorResponse("UNAUTHORIZED", ex.getMessage()));
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
     log.error("Unexpected error: {}", ex.getMessage());
