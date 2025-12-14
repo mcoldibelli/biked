@@ -46,6 +46,14 @@ public class GlobalExceptionHandler {
         .body(new ErrorResponse("CONFLICT", ex.getMessage()));
   }
 
+  @ExceptionHandler(WorkoutNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleWorkoutNotFound(WorkoutNotFoundException ex) {
+    log.warn("Workout not found: {}", ex.getMessage());
+    return ResponseEntity
+        .status(HttpStatus.NOT_FOUND)
+        .body(new ErrorResponse("NOT_FOUND", ex.getMessage()));
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
     log.error("Unexpected error: {}", ex.getMessage());
