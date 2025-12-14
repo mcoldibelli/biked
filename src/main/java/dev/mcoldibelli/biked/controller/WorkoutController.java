@@ -2,7 +2,7 @@ package dev.mcoldibelli.biked.controller;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
-import dev.mcoldibelli.biked.dto.request.FinishedWorkoutRequest;
+import dev.mcoldibelli.biked.dto.request.FinishWorkoutRequest;
 import dev.mcoldibelli.biked.dto.response.WorkoutResponse;
 import dev.mcoldibelli.biked.service.WorkoutService;
 import jakarta.validation.Valid;
@@ -37,7 +37,7 @@ public class WorkoutController {
   @PutMapping("/{id}/finish")
   public ResponseEntity<WorkoutResponse> finish(
       @PathVariable UUID id,
-      @Valid @RequestBody FinishedWorkoutRequest request) {
+      @Valid @RequestBody FinishWorkoutRequest request) {
     var userId = getCurrentUserId();
     var workout = workoutService.finish(id, userId, request);
     return ResponseEntity.ok(workout);

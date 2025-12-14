@@ -1,6 +1,6 @@
 package dev.mcoldibelli.biked.service;
 
-import dev.mcoldibelli.biked.dto.request.FinishedWorkoutRequest;
+import dev.mcoldibelli.biked.dto.request.FinishWorkoutRequest;
 import dev.mcoldibelli.biked.dto.response.WorkoutResponse;
 import dev.mcoldibelli.biked.exception.WorkoutNotFoundException;
 import dev.mcoldibelli.biked.model.Workout;
@@ -43,7 +43,7 @@ public class WorkoutService {
   }
 
   @Transactional
-  public WorkoutResponse finish(UUID workoutId, UUID userId, FinishedWorkoutRequest request) {
+  public WorkoutResponse finish(UUID workoutId, UUID userId, FinishWorkoutRequest request) {
     log.info("Finishing workout: {}", workoutId);
 
     var workout = workoutRepository.findByIdAndUserId(workoutId, userId)

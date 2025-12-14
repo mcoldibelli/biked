@@ -2,7 +2,7 @@ package dev.mcoldibelli.biked.dto.request;
 
 import jakarta.validation.constraints.Min;
 
-public record FinishedWorkoutRequest(
+public record FinishWorkoutRequest(
     @Min(0) Double avgCadence,
     @Min(0) Double maxCadence,
     @Min(0) Double avgSpeed,
