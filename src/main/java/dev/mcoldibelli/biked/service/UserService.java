@@ -3,6 +3,7 @@ package dev.mcoldibelli.biked.service;
 import dev.mcoldibelli.biked.dto.request.CreateUserRequest;
 import dev.mcoldibelli.biked.dto.request.UpdateUserRequest;
 import dev.mcoldibelli.biked.dto.response.UserResponse;
+import dev.mcoldibelli.biked.exception.EmailAlreadyExistsException;
 import dev.mcoldibelli.biked.exception.UserNotFoundException;
 import dev.mcoldibelli.biked.model.User;
 import dev.mcoldibelli.biked.repository.UserRepository;
@@ -39,6 +40,10 @@ public class UserService {
   @Transactional
   public UserResponse create(CreateUserRequest request) {
     log.info("Creating user with email: {}", request.email());
+
+    if (userRepository.existsByEmail(request.email())) {
+      throw new EmailAlreadyExistsException(request.email());
+    }
 
     var user = User.builder()
         .email(request.email())

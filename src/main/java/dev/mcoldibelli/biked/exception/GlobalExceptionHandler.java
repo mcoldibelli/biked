@@ -38,6 +38,14 @@ public class GlobalExceptionHandler {
         .body(new ErrorResponse("UNAUTHORIZED", ex.getMessage()));
   }
 
+  @ExceptionHandler(EmailAlreadyExistsException.class)
+  public ResponseEntity<ErrorResponse> handleEmailAlreadyExists(EmailAlreadyExistsException ex) {
+    log.warn("Email already exists: {}", ex.getMessage());
+    return ResponseEntity
+        .status(HttpStatus.CONFLICT)
+        .body(new ErrorResponse("CONFLICT", ex.getMessage()));
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
     log.error("Unexpected error: {}", ex.getMessage());
