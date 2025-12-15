@@ -27,8 +27,13 @@ public class SecurityConfig {
         .sessionManagement(session ->
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/v1/auth/**").permitAll()
-            .requestMatchers("/api/v1/telemetry/**").permitAll()
+            .requestMatchers(
+                "/api/v1/auth/**",
+                "/api/v1/telemetry/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/v3/api-docs/**"
+            ).permitAll()
             .anyRequest().authenticated())
         .headers(headers -> headers.frameOptions(FrameOptionsConfig::disable))
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

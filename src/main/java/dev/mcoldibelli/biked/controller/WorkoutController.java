@@ -5,6 +5,9 @@ import static org.springframework.http.HttpStatus.CREATED;
 import dev.mcoldibelli.biked.dto.request.FinishWorkoutRequest;
 import dev.mcoldibelli.biked.dto.response.WorkoutResponse;
 import dev.mcoldibelli.biked.service.WorkoutService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +26,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/workouts")
 @RequiredArgsConstructor
+@Tag(name = "Workouts", description = "Workouts management")
+@SecurityRequirement(name = "Bearer Token")
 public class WorkoutController {
 
   private final WorkoutService workoutService;
 
   @PostMapping
+  @Operation(summary = "Start workout session", description = "Create a new workout in progress")
   public ResponseEntity<WorkoutResponse> start() {
     var userId = getCurrentUserId();
     var workout = workoutService.start(userId);
@@ -35,6 +41,7 @@ public class WorkoutController {
   }
 
   @PutMapping("/{id}/finish")
+  @Operation(summary = "Finishes workout", description = "Finishes workout session and calculate its metrics")
   public ResponseEntity<WorkoutResponse> finish(
       @PathVariable UUID id,
       @Valid @RequestBody FinishWorkoutRequest request) {
@@ -44,12 +51,14 @@ public class WorkoutController {
   }
 
   @GetMapping("/{id}")
+  @Operation(summary = "Search workout", description = "Returns details from a given workout")
   public ResponseEntity<WorkoutResponse> getById(@PathVariable UUID id) {
     var userId = getCurrentUserId();
     return ResponseEntity.ok(workoutService.findById(id, userId));
   }
 
   @GetMapping
+  @Operation(summary = "List workouts", description = "List all workouts from a user, using pagination")
   public ResponseEntity<Page<WorkoutResponse>> getAll(Pageable pageable) {
     var userId = getCurrentUserId();
     return ResponseEntity.ok(workoutService.findAllByUser(userId, pageable));

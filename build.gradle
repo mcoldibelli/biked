@@ -21,6 +21,7 @@ repositories {
 
 ext {
     jjwtVersion = "0.12.6"
+    openapiVersion = "2.8.0"
 }
 
 dependencies {
@@ -44,7 +45,10 @@ dependencies {
 
     // Mensageria
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
-    
+
+    // Docs
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openapiVersion}"
+
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
