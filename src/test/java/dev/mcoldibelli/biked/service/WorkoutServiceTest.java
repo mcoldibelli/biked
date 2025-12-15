@@ -12,6 +12,7 @@ import dev.mcoldibelli.biked.exception.WorkoutNotFoundException;
 import dev.mcoldibelli.biked.model.User;
 import dev.mcoldibelli.biked.model.Workout;
 import dev.mcoldibelli.biked.model.WorkoutStatus;
+import dev.mcoldibelli.biked.repository.DataPointRepository;
 import dev.mcoldibelli.biked.repository.UserRepository;
 import dev.mcoldibelli.biked.repository.WorkoutRepository;
 import java.time.Instant;
@@ -37,6 +38,9 @@ class WorkoutServiceTest {
 
   @Mock
   private UserRepository userRepository;
+
+  @Mock
+  private DataPointRepository dataPointRepository;
 
   @InjectMocks
   private WorkoutService workoutService;
@@ -91,6 +95,11 @@ class WorkoutServiceTest {
     when(workoutRepository.findByIdAndUserId(workoutId, userId)).thenReturn(Optional.of(workout));
     when(workoutRepository.save(any(Workout.class))).thenReturn(workout);
 
+    when(dataPointRepository.findAvgCadenceByWorkoutId(workoutId)).thenReturn(85.5);
+    when(dataPointRepository.findMaxCadenceByWorkoutId(workoutId)).thenReturn(120.0);
+    when(dataPointRepository.findAvgSpeedByWorkoutId(workoutId)).thenReturn(25.3);
+    when(dataPointRepository.findMaxSpeedByWorkoutId(workoutId)).thenReturn(35.0);
+
     // Act
     var result = workoutService.finish(workoutId, userId, request);
 
@@ -98,6 +107,7 @@ class WorkoutServiceTest {
     assertThat(result).isNotNull();
     verify(workoutRepository).findByIdAndUserId(workoutId, userId);
     verify(workoutRepository).save(any(Workout.class));
+    verify(dataPointRepository).findAvgCadenceByWorkoutId(workoutId);
   }
 
   @Test

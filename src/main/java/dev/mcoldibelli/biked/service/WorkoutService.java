@@ -5,6 +5,7 @@ import dev.mcoldibelli.biked.dto.response.WorkoutResponse;
 import dev.mcoldibelli.biked.exception.WorkoutNotFoundException;
 import dev.mcoldibelli.biked.model.Workout;
 import dev.mcoldibelli.biked.model.WorkoutStatus;
+import dev.mcoldibelli.biked.repository.DataPointRepository;
 import dev.mcoldibelli.biked.repository.UserRepository;
 import dev.mcoldibelli.biked.repository.WorkoutRepository;
 import java.time.Duration;
@@ -24,6 +25,7 @@ public class WorkoutService {
 
   private final WorkoutRepository workoutRepository;
   private final UserRepository userRepository;
+  private final DataPointRepository dataPointRepository;
 
   public WorkoutResponse start(UUID userId) {
     log.info("Starting workout for user: {}", userId);
@@ -49,18 +51,30 @@ public class WorkoutService {
     var workout = workoutRepository.findByIdAndUserId(workoutId, userId)
         .orElseThrow(() -> new WorkoutNotFoundException(workoutId));
 
-    var finishedAt = Instant.now();
-    var duration = Duration.between(workout.getStartedAt(), finishedAt);
+    if (workout.getStatus() != WorkoutStatus.IN_PROGRESS) {
+      throw new IllegalStateException("Workout is not in progress");
+    }
 
     workout.setStatus(WorkoutStatus.COMPLETED);
-    workout.setFinishedAt(finishedAt);
-    workout.setDurationSeconds((int) duration.getSeconds());
-    workout.setAvgCadence(request.avgCadence());
-    workout.setMaxCadence(request.maxCadence());
-    workout.setAvgSpeed(request.avgSpeed());
-    workout.setMaxSpeed(request.maxSpeed());
-    workout.setDistanceMeters(request.distanceMeters());
-    workout.setCaloriesBurned(request.caloriesBurned());
+    workout.setFinishedAt(Instant.now());
+    workout.setDurationSeconds(
+        (int) Duration.between(workout.getStartedAt(), workout.getFinishedAt()).getSeconds());
+
+    // Metrics from data points
+    var avgCadence = dataPointRepository.findAvgCadenceByWorkoutId(workoutId);
+    var maxCadence = dataPointRepository.findMaxCadenceByWorkoutId(workoutId);
+    var avgSpeed = dataPointRepository.findAvgSpeedByWorkoutId(workoutId);
+    var maxSpeed = dataPointRepository.findMaxSpeedByWorkoutId(workoutId);
+
+    workout.setAvgCadence(avgCadence);
+    workout.setMaxCadence(maxCadence);
+    workout.setAvgSpeed(avgSpeed);
+    workout.setMaxSpeed(maxSpeed);
+
+    if (request != null) {
+      workout.setDistanceMeters(request.distanceMeters());
+      workout.setCaloriesBurned(request.caloriesBurned());
+    }
 
     var saved = workoutRepository.save(workout);
     log.info("Workout finished: {}", saved.getId());
