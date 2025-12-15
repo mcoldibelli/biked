@@ -42,9 +42,9 @@ dependencies {
     // PostgreSQL
     runtimeOnly 'org.postgresql:postgresql'
 
-    // H2 para desenvolvimento local
-    runtimeOnly 'com.h2database:h2'
-
+    // Mensageria
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

@@ -28,7 +28,7 @@ public class SecurityConfig {
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/v1/auth/**").permitAll()
-            .requestMatchers("/h2-console/**").permitAll()
+            .requestMatchers("/api/v1/telemetry/**").permitAll()
             .anyRequest().authenticated())
         .headers(headers -> headers.frameOptions(FrameOptionsConfig::disable))
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
