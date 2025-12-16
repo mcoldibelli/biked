@@ -3,12 +3,16 @@ package dev.mcoldibelli.biked.controller;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import dev.mcoldibelli.biked.dto.request.FinishWorkoutRequest;
+import dev.mcoldibelli.biked.dto.response.DataPointResponse;
 import dev.mcoldibelli.biked.dto.response.WorkoutResponse;
+import dev.mcoldibelli.biked.service.DataPointService;
+import dev.mcoldibelli.biked.service.JwtService;
 import dev.mcoldibelli.biked.service.WorkoutService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class WorkoutController {
 
   private final WorkoutService workoutService;
+  private final JwtService jwtService;
+  private final DataPointService dataPointService;
 
   @PostMapping
   @Operation(summary = "Start workout session", description = "Create a new workout in progress")
@@ -68,5 +75,16 @@ public class WorkoutController {
     return (UUID) SecurityContextHolder.getContext()
         .getAuthentication()
         .getPrincipal();
+  }
+
+  @GetMapping("/{id}/datapoints")
+  @Operation(summary = "List telemetry", description = "Return all telemetry points from workout")
+  public ResponseEntity<List<DataPointResponse>> getDataPoints(
+      @PathVariable UUID id,
+      @RequestHeader("Authorization") String token
+  ) {
+    var userId = jwtService.extractUserId(token.replace("Bearer ", ""));
+    workoutService.findById(id, userId);
+    return ResponseEntity.ok(dataPointService.findByWorkoutId(id));
   }
 }
