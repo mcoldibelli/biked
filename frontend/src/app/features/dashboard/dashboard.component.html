@@ -1,0 +1,57 @@
+<div class="dashboard">
+  <header>
+    <div class="logo">Biked</div>
+    <div class="user-info">
+      <span>{{ user?.name }}</span>
+      <button (click)="logout()" class="btn-logout">Sair</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="welcome">
+      <h1>Olá, {{ user?.name?.split(' ')?.[0] || '' }}!</h1>
+      <button (click)="startWorkout()" class="btn-start">Iniciar Treino</button>
+    </div>
+
+    <section class="workouts">
+      <h2>Historico de Treinos</h2>
+
+      @if (loading) {
+        <div class="loading">Carregando...</div>
+      } @else if (workouts.length === 0) {
+        <div class="empty">Nenhum treino registrado ainda.</div>
+      } @else {
+        <div class="workout-list">
+          @for (workout of workouts; track workout.id) {
+            <div (click)="viewWorkout(workout)" class="workout-card">
+              <div class="workout-header">
+                <span class="date">{{ formatDate(workout.createdAt) }}</span>
+                <span [class]="workout.status.toLowerCase()" class="status">
+                  {{ workout.status }}
+                </span>
+              </div>
+              <div class="workout-stats">
+                <div class="stat">
+                  <span class="value">{{ formatDuration(workout.durationSeconds) }}</span>
+                  <span class="label">Duracao</span>
+                </div>
+                <div class="stat">
+                  <span class="value">{{ workout.avgCadence?.toFixed(0) || '--' }}</span>
+                  <span class="label">RPM med</span>
+                </div>
+                <div class="stat">
+                  <span class="value">{{ workout.avgSpeed?.toFixed(1) || '--' }}</span>
+                  <span class="label">km/h med</span>
+                </div>
+                <div class="stat">
+                  <span class="value">{{ workout.caloriesBurned || '--' }}</span>
+                  <span class="label">kcal</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  </main>
+</div>

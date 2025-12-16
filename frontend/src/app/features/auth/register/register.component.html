@@ -1,0 +1,55 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h1>Biked</h1>
+    <h2>Criar Conta</h2>
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">Nome</label>
+        <input
+          [(ngModel)]="name"
+          id="name"
+          name="name"
+          placeholder="Seu nome"
+          required
+          type="text"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          [(ngModel)]="email"
+          id="email"
+          name="email"
+          placeholder="seu@email.com"
+          required
+          type="email"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <input
+          [(ngModel)]="password"
+          id="password"
+          minlength="8"
+          name="password"
+          placeholder="Mínimo 8 caracteres"
+          required
+          type="password"
+        />
+      </div>
+
+      <div *ngIf="error" class="error">{{ error }}</div>
+
+      <button [disabled]="loading" type="submit">
+        {{ loading ? 'Registrando...' : 'Registrar' }}
+      </button>
+    </form>
+
+    <p class="link">
+      Já tem conta? <a routerLink="/login">Faça login</a>
+    </p>
+  </div>
+</div>

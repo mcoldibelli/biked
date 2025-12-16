@@ -68,6 +68,7 @@ Servicos disponiveis:
 docker-compose up db rabbitmq -d
 
 # Execute a aplicacao
+cd backend
 ./gradlew bootRun
 ```
 
@@ -137,24 +138,28 @@ python3 telemetry_simulator.py endurance
 
 ```
 biked/
-├── src/main/java/dev/mcoldibelli/biked/
-│   ├── config/          # Configuracoes (Security, JWT, RabbitMQ, OpenAPI)
-│   ├── controller/      # Endpoints REST
-│   ├── dto/             # Request/Response objects
-│   ├── exception/       # Tratamento de erros
-│   ├── model/           # Entidades JPA
-│   ├── repository/      # Acesso a dados
-│   └── service/         # Logica de negocio
-├── src/test/            # Testes unitarios e integracao
-├── tools/               # Scripts auxiliares (simulador)
-├── docker-compose.yml   # Orquestracao de containers
-├── Dockerfile           # Build da aplicacao
-└── build.gradle         # Dependencias e build
+├── backend/                              # Aplicacao Spring Boot
+│   ├── src/main/java/dev/mcoldibelli/biked/
+│   │   ├── config/                       # Configuracoes (Security, JWT, RabbitMQ, OpenAPI)
+│   │   ├── controller/                   # Endpoints REST
+│   │   ├── dto/                          # Request/Response objects
+│   │   ├── exception/                    # Tratamento de erros
+│   │   ├── model/                        # Entidades JPA
+│   │   ├── repository/                   # Acesso a dados
+│   │   └── service/                      # Logica de negocio
+│   ├── src/test/                         # Testes unitarios e integracao
+│   ├── Dockerfile                        # Build da aplicacao
+│   └── build.gradle                      # Dependencias e build
+├── frontend/                             # Aplicacao web (em desenvolvimento)
+├── tools/                                # Scripts auxiliares (simulador)
+└── docker-compose.yml                    # Orquestracao de containers
 ```
 
 ## Testes
 
 ```bash
+cd backend
+
 # Executar testes
 ./gradlew test
 

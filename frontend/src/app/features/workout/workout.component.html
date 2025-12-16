@@ -1,0 +1,83 @@
+<div class="workout-page">
+  <header>
+    <button (click)="goBack()" class="btn-back">Voltar</button>
+    <div class="logo">Biked</div>
+    <div class="spacer"></div>
+  </header>
+
+  <main *ngIf="workout">
+    <div class="workout-header">
+      <h1>Detalhes do Treino</h1>
+      <span [class]="workout.status.toLowerCase()" class="status">
+        {{ workout.status }}
+      </span>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="value">{{ formatDuration(workout.durationSeconds) }}</span>
+        <span class="label">Duracao</span>
+      </div>
+      <div class="stat-card">
+        <span class="value">{{ workout.avgCadence?.toFixed(1) || '--' }}</span>
+        <span class="label">Cadencia Media (RPM)</span>
+      </div>
+      <div class="stat-card">
+        <span class="value">{{ workout.maxCadence || '--' }}</span>
+        <span class="label">Cadencia Maxima (RPM)</span>
+      </div>
+      <div class="stat-card">
+        <span class="value">{{ workout.avgSpeed?.toFixed(1) || '--' }}</span>
+        <span class="label">Velocidade Media (km/h)</span>
+      </div>
+      <div class="stat-card">
+        <span class="value">{{ workout.maxSpeed?.toFixed(1) || '--' }}</span>
+        <span class="label">Velocidade Maxima (km/h)</span>
+      </div>
+      <div class="stat-card">
+        <span class="value">{{ workout.distanceMeters?.toFixed(0) || '--' }}</span>
+        <span class="label">Distancia (m)</span>
+      </div>
+      <div class="stat-card">
+        <span class="value">{{ workout.caloriesBurned || '--' }}</span>
+        <span class="label">Calorias (kcal)</span>
+      </div>
+    </div>
+
+    <button
+      (click)="finishWorkout()"
+      *ngIf="workout.status === 'IN_PROGRESS'"
+      class="btn-finish"
+    >
+      Finalizar Treino
+    </button>
+
+    <section *ngIf="dataPoints.length > 0" class="datapoints">
+      <h2>Telemetria ({{ dataPoints.length }} pontos)</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Cadencia</th>
+            <th>Velocidade</th>
+            <th>FC</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let dp of dataPoints">
+            <td>{{ formatTime(dp.recordedAt) }}</td>
+            <td>{{ dp.cadence }} RPM</td>
+            <td>{{ dp.speed.toFixed(1) }} km/h</td>
+            <td>{{ dp.heartRate || '--' }} BPM</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div *ngIf="!loading && dataPoints.length === 0" class="empty">
+      Nenhum dado de telemetria registrado.
+    </div>
+  </main>
+</div>
