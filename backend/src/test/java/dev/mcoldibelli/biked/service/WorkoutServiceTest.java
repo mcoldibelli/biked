@@ -78,7 +78,7 @@ class WorkoutServiceTest {
     when(workoutRepository.save(any(Workout.class))).thenReturn(workout);
 
     // Act
-    var result = workoutService.start(userId);
+    var result = workoutService.start(userId, null);
 
     // Assert
     assertThat(result).isNotNull();
