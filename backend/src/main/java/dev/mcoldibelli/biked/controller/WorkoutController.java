@@ -2,6 +2,7 @@ package dev.mcoldibelli.biked.controller;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
+import dev.mcoldibelli.biked.dto.request.CreateWorkoutRequest;
 import dev.mcoldibelli.biked.dto.request.FinishWorkoutRequest;
 import dev.mcoldibelli.biked.dto.response.DataPointResponse;
 import dev.mcoldibelli.biked.dto.response.WorkoutResponse;
@@ -41,9 +42,11 @@ public class WorkoutController {
 
   @PostMapping
   @Operation(summary = "Start workout session", description = "Create a new workout in progress")
-  public ResponseEntity<WorkoutResponse> start() {
+  public ResponseEntity<WorkoutResponse> start(
+      @RequestBody(required = false) CreateWorkoutRequest request) {
     var userId = getCurrentUserId();
-    var workout = workoutService.start(userId);
+    var deviceId = request != null ? request.deviceId() : null;
+    var workout = workoutService.start(userId, deviceId);
     return ResponseEntity.status(CREATED).body(workout);
   }
 

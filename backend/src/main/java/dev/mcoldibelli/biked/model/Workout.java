@@ -68,6 +68,10 @@ public class Workout {
   @Column(name = "calories_burned")
   private Integer caloriesBurned;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "device_id", nullable = true)
+  private Device device;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private Instant createdAt;
 

@@ -32,6 +32,8 @@ public class SecurityConfig {
             .requestMatchers(
                 "/api/v1/auth/**",
                 "/api/v1/telemetry/**",
+                "/api/v1/devices/{macAddress}",
+                "/api/v1/devices/{macAddress}/active-workout",
                 "/swagger-ui/**",
                 "/swagger-ui.html",
                 "/v3/api-docs/**"
