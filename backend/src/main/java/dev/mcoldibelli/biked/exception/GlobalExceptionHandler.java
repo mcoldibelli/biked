@@ -54,6 +54,40 @@ public class GlobalExceptionHandler {
         .body(new ErrorResponse("NOT_FOUND", ex.getMessage()));
   }
 
+  @ExceptionHandler(DeviceNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleDeviceNotFound(DeviceNotFoundException ex) {
+    log.warn("Device not found: {}", ex.getMessage());
+    return ResponseEntity
+        .status(HttpStatus.NOT_FOUND)
+        .body(new ErrorResponse("NOT_FOUND", ex.getMessage()));
+  }
+
+  @ExceptionHandler(MacAddressAlreadyExistsException.class)
+  public ResponseEntity<ErrorResponse> handleMacAddressAlreadyExists(
+      MacAddressAlreadyExistsException ex) {
+    log.warn("Mac address already exists: {}", ex.getMessage());
+    return ResponseEntity
+        .status(HttpStatus.CONFLICT)
+        .body(new ErrorResponse("CONFLICT", ex.getMessage()));
+  }
+
+  @ExceptionHandler(ActiveWorkoutNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleActiveWorkoutNotFound(
+      ActiveWorkoutNotFoundException ex) {
+    log.warn("Active workout not found: {}", ex.getMessage());
+    return ResponseEntity
+        .status(HttpStatus.NOT_FOUND)
+        .body(new ErrorResponse("NOT_FOUND", ex.getMessage()));
+  }
+
+  @ExceptionHandler(WorkoutNotInProgressException.class)
+  public ResponseEntity<ErrorResponse> handleWorkoutNotInProgress(
+      WorkoutNotInProgressException ex) {
+    log.warn("Telemetry rejected: {}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(new ErrorResponse("CONFLICT", ex.getMessage()));
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
     log.error("Unexpected error: {}", ex.getMessage());
