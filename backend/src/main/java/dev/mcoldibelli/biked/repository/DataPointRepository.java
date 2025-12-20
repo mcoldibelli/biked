@@ -36,4 +36,7 @@ public interface DataPointRepository extends JpaRepository<DataPoint, UUID> {
       WHERE d.workout.id = :workoutId
       """)
   Double findMaxSpeedByWorkoutId(@Param("workoutId") UUID workoutId);
+
+  @Query("SELECT SUM(d.speed) FROM DataPoint d WHERE d.workout.id = :workoutId")
+  Double sumSpeedByWorkoutId(@Param("workoutId") UUID workoutId);
 }
