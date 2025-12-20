@@ -66,6 +66,10 @@ public class UserService {
       user.setName(request.name());
     }
 
+    if (request.weightKg() != null) {
+      user.setWeightKg(request.weightKg());
+    }
+
     var saved = userRepository.save(user);
     log.info("User updated with id: {}", saved.getId());
 

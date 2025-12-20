@@ -43,6 +43,15 @@ public class UserController {
     return ResponseEntity.ok(userService.findById(userId));
   }
 
+  @PutMapping("/me")
+  @Operation(summary = "Update current user", description = "Updates authenticated user data")
+  public ResponseEntity<UserResponse> updateMe(@Valid @RequestBody UpdateUserRequest request) {
+    var userId = (UUID) SecurityContextHolder.getContext()
+        .getAuthentication()
+        .getPrincipal();
+    return ResponseEntity.ok(userService.update(userId, request));
+  }
+
   @GetMapping("/{id}")
   @Operation(summary = "Search for ID", description = "Returns a user by ID")
   public ResponseEntity<UserResponse> getById(@PathVariable UUID id) {

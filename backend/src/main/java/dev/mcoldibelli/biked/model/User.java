@@ -41,6 +41,8 @@ public class User {
 
   @Column(nullable = false)
   private String password;
+  
+  private Double weightKg;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   @Builder.Default
