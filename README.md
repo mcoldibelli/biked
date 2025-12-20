@@ -1,7 +1,7 @@
 # Biked
 
 Sistema de telemetria para bike de spinning que coleta dados em tempo real de sensores, processa
-metricas de performance e disponibiliza atraves de APIs REST.
+métricas de performance e disponibiliza através de APIs REST.
 
 ## Stack Tecnologica
 
@@ -40,7 +40,7 @@ metricas de performance e disponibiliza atraves de APIs REST.
 
 - Java 17+
 - Docker e Docker Compose
-- Python 3 (para o simulador)
+- Arduino IDE ou PlatformIO (para o firmware)
 
 ## Como Executar
 
@@ -74,37 +74,69 @@ cd backend
 
 ## Endpoints da API
 
-### Autenticacao
+### Autenticação
 
-| Metodo | Endpoint                | Descricao           |
+| Método | Endpoint                | Descrição           |
 |--------|-------------------------|---------------------|
-| POST   | `/api/v1/auth/register` | Registrar usuario   |
+| POST   | `/api/v1/auth/register` | Registrar usuário   |
 | POST   | `/api/v1/auth/login`    | Login (retorna JWT) |
 
-### Usuarios
+### Usuários
 
-| Metodo | Endpoint             | Descricao           |
+| Método | Endpoint             | Descrição           |
 |--------|----------------------|---------------------|
-| GET    | `/api/v1/users/me`   | Usuario autenticado |
+| GET    | `/api/v1/users/me`   | Usuário autenticado |
 | GET    | `/api/v1/users/{id}` | Buscar por ID       |
-| PUT    | `/api/v1/users/{id}` | Atualizar usuario   |
-| DELETE | `/api/v1/users/{id}` | Remover usuario     |
+| PUT    | `/api/v1/users/me`   | Atualizar usuário   |
+| PUT    | `/api/v1/users/{id}` | Atualizar por ID    |
+| DELETE | `/api/v1/users/{id}` | Remover usuário     |
+
+### Devices
+
+| Método | Endpoint                                      | Descrição                      | Auth    |
+|--------|-----------------------------------------------|--------------------------------|---------|
+| POST   | `/api/v1/devices`                             | Registrar device (MAC address) | JWT     |
+| GET    | `/api/v1/devices`                             | Listar devices do usuário      | JWT     |
+| GET    | `/api/v1/devices/{macAddress}`                | Buscar device por MAC          | Público |
+| GET    | `/api/v1/devices/{macAddress}/active-workout` | Buscar workout ativo           | Público |
 
 ### Workouts
 
-| Metodo | Endpoint                           | Descricao                 |
+| Método | Endpoint                           | Descrição                 |
 |--------|------------------------------------|---------------------------|
 | POST   | `/api/v1/workouts`                 | Iniciar treino            |
 | PUT    | `/api/v1/workouts/{id}/finish`     | Finalizar treino          |
 | GET    | `/api/v1/workouts/{id}`            | Buscar treino             |
 | GET    | `/api/v1/workouts`                 | Listar treinos (paginado) |
-| GET    | `/api/v1/workouts/{id}/datapoints` | Historico de telemetria   |
+| GET    | `/api/v1/workouts/{id}/datapoints` | Histórico de telemetria   |
 
 ### Telemetria
 
-| Metodo | Endpoint            | Descricao              |
+| Método | Endpoint            | Descrição              |
 |--------|---------------------|------------------------|
 | POST   | `/api/v1/telemetry` | Enviar dados do sensor |
+
+## Métricas Calculadas
+
+Ao finalizar um workout, o sistema calcula automaticamente:
+
+| Métrica                 | Cálculo                                            |
+|-------------------------|----------------------------------------------------|
+| Duração                 | `finishedAt - startedAt`                           |
+| Cadência Média/Máxima   | Agregação dos datapoints                           |
+| Velocidade Média/Máxima | Agregação dos datapoints                           |
+| Distância               | `SUM(speed) × 1.39` metros                         |
+| Calorias                | `MET × peso × duração` (MET dinâmico por cadência) |
+
+### MET Dinâmico
+
+| Cadência (RPM) | MET |
+|----------------|-----|
+| < 30           | 2.0 |
+| 30-49          | 2.5 |
+| 50-69          | 4.0 |
+| 70-89          | 5.5 |
+| ≥ 90           | 7.0 |
 
 ## Simulador de Telemetria
 
@@ -138,21 +170,23 @@ python3 telemetry_simulator.py endurance
 
 ```
 biked/
-├── backend/                              # Aplicacao Spring Boot
+├── backend/                              # Aplicação Spring Boot
 │   ├── src/main/java/dev/mcoldibelli/biked/
-│   │   ├── config/                       # Configuracoes (Security, JWT, RabbitMQ, OpenAPI)
+│   │   ├── config/                       # Configurações (Security, JWT, RabbitMQ, OpenAPI)
 │   │   ├── controller/                   # Endpoints REST
 │   │   ├── dto/                          # Request/Response objects
 │   │   ├── exception/                    # Tratamento de erros
 │   │   ├── model/                        # Entidades JPA
 │   │   ├── repository/                   # Acesso a dados
-│   │   └── service/                      # Logica de negocio
-│   ├── src/test/                         # Testes unitarios e integracao
-│   ├── Dockerfile                        # Build da aplicacao
-│   └── build.gradle                      # Dependencias e build
-├── frontend/                             # Aplicacao web (em desenvolvimento)
+│   │   └── service/                      # Lógica de negócio
+│   ├── src/test/                         # Testes unitários e integração
+│   ├── Dockerfile                        # Build da aplicação
+│   └── build.gradle                      # Dependências e build
+├── hardware/                             # Firmware ESP32
+│   └── main.ino                          # Código Arduino
+├── frontend/                             # Aplicação web (em desenvolvimento)
 ├── tools/                                # Scripts auxiliares (simulador)
-└── docker-compose.yml                    # Orquestracao de containers
+└── docker-compose.yml                    # Orquestração de containers
 ```
 
 ## Testes
@@ -173,21 +207,60 @@ open build/reports/jacoco/test/html/index.html
 ### Componentes
 
 - ESP32 DevKit V1
-- Modulo Breakout Jack P2 3.5mm
-- Resistor 10k ohms
+- Módulo Breakout Jack P2 3.5mm
 - Protoboard e jumpers
 
-### Conexoes
+### Conexões
 
-| Breakout P2    | ESP32           |
-|----------------|-----------------|
-| TIP (sinal)    | GPIO 14         |
-| SLEEVE (terra) | GND             |
-| Resistor 10k   | 3.3V -> GPIO 14 |
+| Breakout P2    | ESP32   |
+|----------------|---------|
+| TIP (sinal)    | GPIO 14 |
+| SLEEVE (terra) | GND     |
 
-TODO
+> O pull-up interno do ESP32 é utilizado (`INPUT_PULLUP`), não sendo necessário resistor externo.
 
-- O firmware esta em `biked-esp32/` (projeto PlatformIO).
+### Firmware
+
+O código do ESP32 está em `hardware/main.ino`. Funcionalidades:
+
+- Conexão WiFi automática
+- Leitura de cadência via sensor reed switch
+- Busca automática de workout ativo por MAC address
+- Envio de telemetria a cada 5 segundos
+- Detecção de workout finalizado (limpa estado e volta a aguardar)
+- Conversão RPM → velocidade (fator 0.2125)
+
+### Upload do Firmware
+
+1. Instale o Arduino IDE
+2. Adicione suporte ao ESP32 (Board Manager)
+3. Abra `hardware/main.ino`
+4. Configure WiFi e IP do backend no código
+5. Selecione a placa "ESP32 Dev Module"
+6. Faça upload
+
+### Fluxo de Operação
+
+```
+ESP32 liga
+    ↓
+Conecta WiFi
+    ↓
+Obtém MAC address
+    ↓
+Busca workout ativo (GET /devices/{MAC}/active-workout)
+    ↓
+┌─────────────────┬──────────────────┐
+│ Tem workout?    │ Não tem?         │
+│ Envia telemetria│ Aguarda (retry   │
+│ a cada 5s       │ a cada 10s)      │
+└────────┬────────┴──────────────────┘
+         │
+         ↓ (quando workout finaliza)
+Backend retorna 409
+         ↓
+Limpa workoutId → Volta a aguardar
+```
 
 ## Roadmap
 
