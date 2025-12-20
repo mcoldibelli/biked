@@ -138,7 +138,7 @@ class UserControllerTest {
   @Test
   @DisplayName("PUT /api/v1/users/{id} - should update user")
   void shouldUpdateUser() throws Exception {
-    var request = new UpdateUserRequest("Updated name");
+    var request = new UpdateUserRequest("Updated name", null);
     var response = new UserResponse(userId, "test@email.com", "Updated name", Instant.now());
 
     when(userService.update(userId, request)).thenReturn(response);

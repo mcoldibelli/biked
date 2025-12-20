@@ -111,7 +111,7 @@ class UserServiceTest {
   @DisplayName("Should update user successfully")
   void shouldUpdateUser() {
     // Arrange
-    var request = new UpdateUserRequest("Updated Name");
+    var request = new UpdateUserRequest("Updated Name", null);
     when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(userRepository.save(any(User.class))).thenReturn(user);
 
@@ -128,7 +128,7 @@ class UserServiceTest {
   @DisplayName("Should throw exception when updating non-existing user")
   void shouldThrowExceptionWhenUpdatingNonExistingUser() {
     // Arrange
-    var request = new UpdateUserRequest("Updated Name");
+    var request = new UpdateUserRequest("Updated Name", null);
     when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
     // Act & Assert
