@@ -274,6 +274,6 @@ Limpa workoutId → Volta a aguardar
 - [x] CI/CD com GitHub Actions
 - [x] Documentacao Swagger
 - [x] Simulador de telemetria
-- [ ] Frontend web
-- [ ] Integracao ESP32
+- [x] Frontend web
+- [x] Integracao ESP32
 - [ ] Deploy em cloud (AWS/Kubernetes)
